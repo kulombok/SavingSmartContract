@@ -1,4 +1,4 @@
-# Revision history for simple Term Savings Smart Contract Schema
+# Revision history for simple Term Savings Schema
 
 ## 0.1.0.0 -- 2022-11-27
 
