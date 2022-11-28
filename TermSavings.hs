@@ -174,12 +174,9 @@ deposit dp = do
                 { adSave          = Just dd
                 }
         amount  = Ada.lovelaceValueOf $ dpAmount dp
-        r       = Redeemer $ PlutusTx.toBuiltinData $ Save dd
         lookups = Constraints.typedValidatorLookups typedValidator      <>
-                  Constraints.otherScript validator                     <>
-                  Constraints.unspentOutputs (Map.singleton oref o)
-        tx  = Constraints.mustPayToTheScript dat amount                 <>
-              Constraints.mustSpendScriptOutput oref r
+                  Constraints.otherScript validator
+        tx  = Constraints.mustPayToTheScript dat amount
     ledgerTx <- submitTxConstraintsWith lookups tx
     void $ awaitTxConfirmed $ getCardanoTxId ledgerTx
     logInfo @String $ printf "Made saving of %d lovelace" $ dpAmount dp
@@ -187,11 +184,9 @@ deposit dp = do
 validateSaving :: PaymentPubKeyHash -> Contract w s Text (TxOutRef, ChainIndexTxOut, SavingDatum)
 validateSaving beneficiary = do
     utxos <- utxosAt scrAddress
-    let xs = [ (oref, o)
-             | (oref, o) <- Map.toList utxos
-             ]
+    let xs = head $ Map.toList utxos
     case xs of
-        [(oref, o)] -> case _ciTxOutDatum o of
+        (oref, o) -> case _ciTxOutDatum o of
             Left _          -> throwError "[Deposit] Saving Datum missing"
             Right (Datum e) -> case PlutusTx.fromBuiltinData e of
                 Nothing -> throwError "[Deposit] Saving Datum has wrong type"
