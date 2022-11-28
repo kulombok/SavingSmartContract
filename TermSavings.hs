@@ -64,27 +64,14 @@ data SavingDatum = SavingDatum
 
 PlutusTx.unstableMakeIsData ''SavingDatum
 
-data SavingAction = Save DepositDatum | Cash WithdrawDatum
-    deriving Show
-
-PlutusTx.unstableMakeIsData ''SavingAction
-
 {-# INLINABLE mkValidator #-}
-mkValidator :: SavingDatum -> SavingAction -> ScriptContext -> Bool
-mkValidator SavingDatum{..} redeemer ctx = 
-        case redeemer of
-            Save dd@DepositDatum{..}    ->
-                    traceIfFalse "Can't deposit, beneficiary address not match" $ beneficiaryValidation dd 
-            Cash wd@WithdrawDatum{..}   ->
-                    traceIfFalse "Can't withdraw, beneficiary address not match" signedByBeneficiary &&
+mkValidator :: SavingDatum -> WithdrawDatum -> ScriptContext -> Bool
+mkValidator SavingDatum{..} withdraw ctx = traceIfFalse "Can't withdraw, beneficiary address not match" signedByBeneficiary &&
                     traceIfFalse "Can't withdraw, deadline not reached" deadlineValidation &&
-                    traceIfFalse "Can't withdraw, incorrect PIN" (pinValidation wd)
+                    traceIfFalse "Can't withdraw, incorrect PIN" (pinValidation withdraw)
   where
     info :: TxInfo
     info = scriptContextTxInfo ctx
-
-    beneficiaryValidation :: DepositDatum -> Bool
-    beneficiaryValidation dd = rdBeneficiary adRegister == ddBeneficiary dd
     
     signedByBeneficiary :: Bool
     signedByBeneficiary = txSignedBy info $ unPaymentPubKeyHash $ rdBeneficiary adRegister
@@ -98,14 +85,14 @@ mkValidator SavingDatum{..} redeemer ctx =
 data Savings
 instance Scripts.ValidatorTypes Savings where
     type instance DatumType Savings = SavingDatum
-    type instance RedeemerType Savings = SavingAction
+    type instance RedeemerType Savings = WithdrawDatum
 
 typedValidator :: Scripts.TypedValidator Savings
 typedValidator = Scripts.mkTypedValidator @Savings
     $$(PlutusTx.compile [|| mkValidator ||])
     $$(PlutusTx.compile [|| wrap ||])
   where
-    wrap = Scripts.wrapValidator @SavingDatum @SavingAction
+    wrap = Scripts.wrapValidator @SavingDatum @WithdrawDatum
 
 validator :: Validator
 validator = Scripts.validatorScript typedValidator
@@ -210,7 +197,7 @@ withdraw wp = do
             let dat     = WithdrawDatum
                         { wdPin         = wpPin wp
                         }
-                r       = Redeemer $ PlutusTx.toBuiltinData $ Cash dat
+                r       = Redeemer $ PlutusTx.toBuiltinData dat
                 orefs   = fst <$> Map.toList utxos
                 lookups = Constraints.unspentOutputs utxos  <>
                           Constraints.otherScript validator
