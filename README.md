@@ -6,9 +6,9 @@
 * Intended as final project to understand Cardano Smart Contract using Plutus
 
 # Feature:
-* Register
-* Deposite
-* Withdraw
+* Register: create saving smart contract with firt deposit 2000000 Lovelace
+* Deposite: deposit coin to the smart contract
+* Withdraw: withdraw all coin in smart contract to the wallet
 
 # Running Project
 * Open Plutus Playground (online https://playground.plutus.iohkdev.io/ | ofline)
