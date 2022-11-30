@@ -7,7 +7,7 @@
 
 # Feature:
 * Register: create saving smart contract with firt deposit 2000000 Lovelace
-* Deposite: deposit coin to the smart contract
+* Deposit: deposit coin to the smart contract
 * Withdraw: withdraw all coin in smart contract to the wallet
 
 # Running Project
@@ -22,3 +22,25 @@
 * Withdrawal must have same address with beneficiary, same pin and already passed the deadline.
   - [Input] Pin --> must be the same Pin.
   - [Validation] Address must same as beneficiary, Withdrawal must have passed deadline and the PIN must match.
+
+# Demo
+* Register: Wallet 1
+  - Beneficiary: bf342ddd3b1a6191d4ce936c92d29834d6879edf2849eaea84c827f8 (Wallet 5)
+  - Deadline: 1596059131000 (+40 slot)
+  - Pin: 12345
+* Wait: 10 (Slot)
+* Deposit: Wallet 2
+  - Beneficiary: bf342ddd3b1a6191d4ce936c92d29834d6879edf2849eaea84c827f8 (Wallet 5)
+  - Amount: 10000000 (Lovelace)
+* Wait: 10 (Slot)
+* Deposit: Wallet 3
+  - Beneficiary: bf342ddd3b1a6191d4ce936c92d29834d6879edf2849eaea84c827f8 (Wallet 5)
+  - Amount: 20000000 (Lovelace)
+* Wait: 10 (Slot)
+* Deposit: Wallet 4
+  - Beneficiary: bf342ddd3b1a6191d4ce936c92d29834d6879edf2849eaea84c827f8 (Wallet 5)
+  - Amount: 30000000 (Lovelace)
+* Wait: 10 (Slot)
+* Withdraw: Wallet 5
+  - Pin: 12345
+* Wait: 10 (Slot)
