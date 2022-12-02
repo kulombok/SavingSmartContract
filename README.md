@@ -6,7 +6,7 @@
 * Intended as final project to understand Cardano Smart Contract using Plutus
 
 # Feature:
-* Register: create saving smart contract with firt deposit 2000000 Lovelace
+* Register: create saving smart contract with first deposit 2000000 Lovelace
 * Deposit: deposit coin to the smart contract
 * Withdraw: withdraw all coin in smart contract to the wallet
 
